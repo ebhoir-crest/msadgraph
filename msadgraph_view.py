@@ -1,4 +1,4 @@
-# File: azureadgraph_view.py
+# File: msadgraph_view.py
 #
 # Copyright (c) 2019-2022 Splunk Inc.
 #
@@ -12,7 +12,7 @@
 # the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 # either express or implied. See the License for the specific language governing permissions
 # and limitations under the License.
-def get_ctx_result(result):
+def get_ctx_result(provides, result):
 
     ctx_result = {}
     param = result.get_param()
@@ -20,11 +20,12 @@ def get_ctx_result(result):
     data = result.get_data()
 
     ctx_result['param'] = param
+    ctx_result['action'] = provides
 
-    if (data):
+    if data:
         ctx_result['data'] = data
 
-    if (summary):
+    if summary:
         ctx_result['summary'] = summary
 
     return ctx_result
@@ -36,9 +37,21 @@ def display_list_user_attributes(provides, all_app_runs, context):
     for summary, action_results in all_app_runs:
         for result in action_results:
 
-            ctx_result = get_ctx_result(result)
+            ctx_result = get_ctx_result(provides, result)
             if (not ctx_result):
                 continue
             results.append(ctx_result)
+
+    if provides == "list users":
+        return_page = "msadgraph_list.html"
+    if provides == "list user attributes":
+        return_page = "msadgraph_list_user_attributes.html"
+    if provides == "list groups":
+        return_page = "msadgraph_list_groups.html"
+    if provides == "get group":
+        return_page = "msadgraph_get_group.html"
+    if provides == "list group members":
+        return_page = "msadgraph_list_group_members.html"
+
     # print context
-    return 'azureadgraph_list_user_attributes.html'
+    return return_page

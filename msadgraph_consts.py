@@ -1,4 +1,4 @@
-# File: azureadgraph_consts.py
+# File: msadgraph_consts.py
 #
 # Copyright (c) 2019-2022 Splunk Inc.
 #
@@ -17,18 +17,19 @@ PHANTOM_SYS_INFO_URL = "{base_url}rest/system_info"
 PHANTOM_ASSET_INFO_URL = "{base_url}rest/asset/{asset_id}"
 
 AZUREADGRAPH_API_URLS = {
-    "Global": "https://graph.windows.net",
-    "US Gov": "https://graph.microsoftazure.us",
-    "Germany": "https://graph.cloudapi.de",
-    "China (21Vianet)": "https://graph.chinacloudapi.cn"
+    "Global": "https://graph.microsoft.com/v1.0",
+    "US Gov L4": "https://graph.microsoft.us",
+    "US Gov L5 (DOD)": "https://dod-graph.microsoft.us",
+    "Germany": "https://graph.microsoft.de",
+    "China (21Vianet)": "https://microsoftgraph.chinacloudapi.cn"
 }
 AZUREADGRAPH_API_REGION = {
-    "Global": "graph.windows.net",
-    "US Gov": "graph.microsoftazure.us",
-    "Germany": "graph.cloudapi.de",
-    "China (21Vianet)": "graph.chinacloudapi.cn"
+    "Global": "graph.microsoft.com",
+    "US Gov L4": "graph.microsoft.us",
+    "US Gov L5 (DOD)": "dod-graph.microsoft.us",
+    "Germany": "graph.microsoft.de",
+    "China (21Vianet)": "microsoftgraph.chinacloudapi.cn"
 }
-AZUREADGRAPH_API_REGEX = "https:\\/\\/{}\\/{}\\/directoryObjects\\/(.+)\\/Microsoft.DirectoryServices.User$"
 MS_AZURE_CONFIG_TENANT = 'tenant_id'
 MS_AZURE_CONFIG_SUBSCRIPTION = 'subscription_id'
 MS_AZURE_CONFIG_CLIENT_ID = 'client_id'
@@ -49,14 +50,14 @@ MS_AZURE_PAGE_SIZE = 999
 
 # For authorization code
 TC_FILE = "oauth_task.out"
-SERVER_TOKEN_URL = "https://login.microsoftonline.com/{0}/oauth2/token"
+SERVER_TOKEN_URL = "https://login.microsoftonline.com/{0}/oauth2/v2.0/token"
 AUTH_FAILURE_MESSAGES = ("token is invalid", "token has expired", "ExpiredAuthenticationToken", "AuthenticationFailed")
 MS_REST_URL_NOT_AVAILABLE_MSG = 'Rest URL not available. Error: {error}'
 MS_OAUTH_URL_MSG = 'Using OAuth URL:\n'
 MS_AUTHORIZE_USER_MSG = 'Please authorize user in a separate tab using URL:'
 MS_GENERATING_ACCESS_TOKEN_MSG = 'Generating access token'
 MS_TC_STATUS_SLEEP = 3
-MS_AZURE_CODE_GENERATION_SCOPE = 'Group.ReadWrite.All User.Read.All User.ReadWrite.All Directory.ReadWrite.All'
+MS_AZURE_CODE_GENERATION_SCOPE = 'offline_access Group.ReadWrite.All User.Read.All User.ReadWrite.All User.ReadWrite Directory.ReadWrite.All Directory.AccessAsUser.All User.ManageIdentities.All GroupMember.ReadWrite.All RoleManagement.ReadWrite.Directory'
 MS_AZURE_AUTHORIZE_TROUBLESHOOT_MSG = 'If authorization URL fails to communicate with your Phantom instance, check whether you have:  '\
                                 ' 1. Specified the Web Redirect URL of your App -- The Redirect URL should be <POST URL>/result . '\
                                 ' 2. Configured the base URL of your Phantom Instance at Administration -> Company Settings -> Info'

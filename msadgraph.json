@@ -1,27 +1,32 @@
 {
-    "appid": "c6d3b801-5c26-4abd-9e89-6d8007e2778f",
-    "name": "Azure AD Graph",
-    "description": "Connects to Azure AD Graph REST API services",
+    "appid": "f2a239df-acb2-47d6-861c-726a435cfe76",
+    "name": "MS Graph for Active Directory",
+    "description": "Connects to Microsoft AD using MS Graph REST API services",
     "type": "identity management",
     "product_vendor": "Microsoft",
-    "logo": "logo_azureactivedirectory.svg",
-    "logo_dark": "logo_azureactivedirectory_dark.svg",
-    "product_name": "Azure AD Graph",
+    "logo": "logo_msadgraph_dark.svg",
+    "logo_dark": "logo_msadgraph_dark.svg",
+    "product_name": "MS Graph for Active Directory",
     "product_version_regex": ".*",
     "publisher": "Splunk",
+    "contributors": [
+        {
+          "name": "Ekta Bhoir"
+        }
+      ],
     "license": "Copyright (c) 2019-2022 Splunk Inc.",
-    "app_version": "2.2.4",
+    "app_version": "1.0.0",
     "python_version": "3",
     "utctime_updated": "2022-01-31T20:02:22.000000Z",
-    "package_name": "phantom_azureadgraph",
-    "main_module": "azureadgraph_connector.py",
-    "min_phantom_version": "5.0.0",
+    "package_name": "phantom_msadgraph",
+    "main_module": "msadgraph_connector.py",
+    "min_phantom_version": "5.1.0",
     "fips_compliant": true,
     "latest_tested_versions": [
-        "Cloud 2022-01-10, API Version: 1.6"
+        "Cloud 2022-01-10, API Version: 1.0"
     ],
     "app_wizard_version": "1.0.0",
-    "rest_handler": "azureadgraph_connector._handle_rest_request",
+    "rest_handler": "msadgraph_connector._handle_rest_request",
     "configuration": {
         "tenant_id": {
             "description": "Tenant (Tenant ID or Tenant Name)",
@@ -67,8 +72,8 @@
         },
         {
             "action": "list users",
-            "description": "List users in a tenant",
-            "verbose": "For more information on using the filter_string parameter, refer to https://docs.microsoft.com/en-us/previous-versions/azure/ad/graph/howto/azure-ad-graph-api-supported-queries-filters-and-paging-options.",
+            "description": "Get a list of users",
+            "verbose": "For more information on using the filter_string and select_string parameter, refer to https://docs.microsoft.com/en-us/graph/query-parameters#select-parameter. By default, only a limited set of properties are returned, to return an alternative property set use $select query parameter.",
             "type": "investigate",
             "identifier": "list_users",
             "read_only": true,
@@ -77,6 +82,11 @@
                     "description": "Filter string to apply to user listing",
                     "data_type": "string",
                     "order": 0
+                },
+                "select_string": {
+                    "description": "Select string to get additional user properties. Separate multiple values with commas",
+                    "data_type": "string",
+                    "order": 1
                 }
             },
             "output": [
@@ -262,7 +272,7 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.objectId",
+                    "data_path": "action_result.data.*.id",
                     "data_type": "string",
                     "column_name": "Object ID",
                     "column_order": 1,
@@ -514,6 +524,21 @@
                     "example_values": [
                         1
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.scope",
+                    "data_type": "string",
+                    "example_value": "Directory.AccessAsUser.All Directory.Read.All Directory.ReadWrite.All Group.ReadWrite.All User.Read User.Read.All User.ReadWrite User.ReadWrite.All profile openid email"
+                },
+                {
+                    "data_path": "action_result.data.*.mobilePhone",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.officeLocation",
+                    "data_type": "string",
+                    "example_value": ""
                 }
             ],
             "render": {
@@ -731,14 +756,19 @@
                     ]
                 },
                 {
-                    "data_path": "summary.total_objects",
+                    "data_path": "summary.total_objects_successful",
                     "data_type": "numeric",
                     "example_values": [
                         1
                     ]
                 },
                 {
-                    "data_path": "summary.total_objects_successful",
+                    "data_path": "action_result.data.*.@odata.context",
+                    "data_type": "string",
+                    "example_value": "https://graph.microsoft.com/v1.0/$metadata#Edm.Boolean"
+                },
+                {
+                    "data_path": "summary.total_objects",
                     "data_type": "numeric",
                     "example_values": [
                         1
@@ -762,7 +792,7 @@
             "undo": "disable user",
             "parameters": {
                 "user_id": {
-                    "description": "User ID to enable tokens of - can be user principal name or object ID",
+                    "description": "User ID to enable - can be user principal name or object ID",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -846,7 +876,7 @@
             "undo": "enable user",
             "parameters": {
                 "user_id": {
-                    "description": "User ID to change password - can be user principal name or object ID",
+                    "description": "User ID to disable - can be user principal name or object ID",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -924,6 +954,7 @@
         {
             "action": "list user attributes",
             "description": "List attributes for all or a specified user",
+            "verbose": "By default, only a limited set of properties are returned, to return an alternative property set use $select query parameter. For more information on using the select_string parameter, refer to https://docs.microsoft.com/en-us/graph/query-parameters#select-parameter.",
             "type": "investigate",
             "identifier": "list_user_attributes",
             "read_only": true,
@@ -938,6 +969,11 @@
                         "azure object id",
                         "email"
                     ]
+                },
+                "select_string": {
+                    "description": "Select string to get additional user properties. Separate multiple values with commas",
+                    "data_type": "string",
+                    "order": 1
                 }
             },
             "output": [
@@ -1302,11 +1338,7 @@
                 },
                 {
                     "data_path": "action_result.summary.user_enabled",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
+                    "correct_data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",
@@ -1329,12 +1361,47 @@
                     "example_values": [
                         1
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.id",
+                    "data_type": "string",
+                    "example_value": "7d55d7e6-cf5a-4dd2-a176-57a3c33b7fa9"
+                },
+                {
+                    "data_path": "action_result.data.*.mobilePhone",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.@odata.context",
+                    "data_type": "string",
+                    "example_value": "https://graph.microsoft.com/v1.0/$metadata#users/$entity"
+                },
+                {
+                    "data_path": "action_result.data.*.officeLocation",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.identities.*.issuer",
+                    "data_type": "string",
+                    "example_value": "phantomengineering2.onmicrosoft.com"
+                },
+                {
+                    "data_path": "action_result.data.*.identities.*.signInType",
+                    "data_type": "string",
+                    "example_value": "userPrincipalName"
+                },
+                {
+                    "data_path": "action_result.data.*.identities.*.issuerAssignedId",
+                    "data_type": "string",
+                    "example_value": "test2@phantomengineering2.onmicrosoft.com"
                 }
             ],
             "render": {
                 "type": "custom",
                 "title": "List User Attributes",
-                "view": "azureadgraph_view.display_list_user_attributes"
+                "view": "msadgraph_view.display_list_user_attributes"
             },
             "versions": "EQ(*)"
         },
@@ -1667,10 +1734,17 @@
         {
             "action": "list groups",
             "description": "List groups in the organization",
+            "verbose": "By default, only a limited set of properties are returned, to return an alternative property set use $select query parameter. For more information on using the select_string parameter, refer to https://docs.microsoft.com/en-us/graph/query-parameters#select-parameter.",
             "type": "investigate",
             "identifier": "list_groups",
             "read_only": true,
-            "parameters": {},
+            "parameters": {
+                "select_string": {
+                    "description": "Select string to get additional group properties. Separate multiple values with commas",
+                    "data_type": "string",
+                    "order": 0
+                }
+            },
             "output": [
                 {
                     "data_path": "action_result.status",
@@ -1736,7 +1810,7 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.objectId",
+                    "data_path": "action_result.data.*.id",
                     "data_type": "string",
                     "example_values": [
                         "2a201c95-101b-42d9-a7af-9a2fdf8193f1"
@@ -1822,6 +1896,86 @@
                     "example_values": [
                         1
                     ]
+                },
+                {
+                    "data_path": "action_result.parameter.select_string",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.theme",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.visibility",
+                    "data_type": "string",
+                    "example_value": "Private"
+                },
+                {
+                    "data_path": "action_result.data.*.classification",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.membershipRule",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.createdDateTime",
+                    "data_type": "string",
+                    "example_value": "2021-03-25T18:40:53Z"
+                },
+                {
+                    "data_path": "action_result.data.*.deletedDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.renewedDateTime",
+                    "data_type": "string",
+                    "example_value": "2021-03-25T18:40:53Z"
+                },
+                {
+                    "data_path": "action_result.data.*.preferredLanguage",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.expirationDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.isAssignableToRole",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.securityIdentifier",
+                    "data_type": "string",
+                    "example_value": "S-1-12-1-294681889-1319597617-672379543-28952017"
+                },
+                {
+                    "data_path": "action_result.data.*.onPremisesSyncEnabled",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.preferredDataLocation",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.onPremisesLastSyncDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.membershipRuleProcessingState",
+                    "data_type": "string",
+                    "example_value": ""
                 }
             ],
             "render": {
@@ -1832,6 +1986,7 @@
         {
             "action": "get group",
             "description": "Get information about a group",
+            "verbose": "By default, only a limited set of properties are returned, to return an alternative property set use $select query parameter. For more information on using the select_string parameter, refer to https://docs.microsoft.com/en-us/graph/query-parameters#select-parameter.",
             "type": "investigate",
             "identifier": "get_group",
             "read_only": true,
@@ -1845,6 +2000,11 @@
                     "contains": [
                         "azure object id"
                     ]
+                },
+                "select_string": {
+                    "description": "Select string to get additional group properties. Separate multiple values with commas",
+                    "data_type": "string",
+                    "order": 1
                 }
             },
             "output": [
@@ -1922,7 +2082,7 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.objectId",
+                    "data_path": "action_result.data.*.id",
                     "data_type": "string",
                     "example_values": [
                         "ddb876b3-603a-437b-9814-2d46a2219a1e"
@@ -2017,6 +2177,86 @@
                     "example_values": [
                         1
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.@odata.context",
+                    "data_type": "string",
+                    "example_value": "https://graph.microsoft.com/v1.0/$metadata#groups(id,displayName)/$entity"
+                },
+                {
+                    "data_path": "action_result.data.*.theme",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.visibility",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.classification",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.membershipRule",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.createdDateTime",
+                    "data_type": "string",
+                    "example_value": "2020-08-05T11:59:49Z"
+                },
+                {
+                    "data_path": "action_result.data.*.deletedDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.renewedDateTime",
+                    "data_type": "string",
+                    "example_value": "2020-08-05T11:59:49Z"
+                },
+                {
+                    "data_path": "action_result.data.*.preferredLanguage",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.expirationDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.isAssignableToRole",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.securityIdentifier",
+                    "data_type": "string",
+                    "example_value": "S-1-12-1-909260723-1083662375-1952945031-2402852259"
+                },
+                {
+                    "data_path": "action_result.data.*.onPremisesSyncEnabled",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.preferredDataLocation",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.onPremisesLastSyncDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.membershipRuleProcessingState",
+                    "data_type": "string",
+                    "example_value": ""
                 }
             ],
             "render": {
@@ -2027,7 +2267,7 @@
         {
             "action": "list group members",
             "description": "List the members in a group",
-            "verbose": "<p>Pagination is not implemented for this action as this endpoint does not support pagination. Here is the <b><a href='https://docs.microsoft.com/en-us/previous-versions/azure/ad/graph/howto/azure-ad-graph-api-supported-queries-filters-and-paging-options' target='_blank'>Documentation</a></b> for the same.</p>",
+            "verbose": "By default, only a limited set of properties are returned, to return an alternative property set use $select query parameter. For more information on using the select_string parameter, refer to https://docs.microsoft.com/en-us/graph/query-parameters#select-parameter.",
             "type": "investigate",
             "identifier": "list_group_members",
             "read_only": true,
@@ -2041,6 +2281,11 @@
                     "contains": [
                         "azure object id"
                     ]
+                },
+                "select_string": {
+                    "description": "Select string to get additional properties. Separate multiple values with commas",
+                    "data_type": "string",
+                    "order": 1
                 }
             },
             "output": [
@@ -2072,7 +2317,7 @@
                     "column_order": 0
                 },
                 {
-                    "data_path": "action_result.data.*.objectId",
+                    "data_path": "action_result.data.*.id",
                     "data_type": "string",
                     "example_values": [
                         "17be76d0-35ed-4881-ab62-d2eb73c2ebe3"
@@ -2110,6 +2355,61 @@
                     "example_values": [
                         1
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.mail",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.surname",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.jobTitle",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.givenName",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.@odata.type",
+                    "data_type": "string",
+                    "example_value": "#microsoft.graph.user"
+                },
+                {
+                    "data_path": "action_result.data.*.mobilePhone",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.officeLocation",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.preferredLanguage",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.userPrincipalName",
+                    "data_type": "string",
+                    "example_value": "ews_retest@phantomengineering2.onmicrosoft.com"
+                },
+                {
+                    "data_path": "action_result.summary.num_users",
+                    "data_type": "numeric",
+                    "example_value": 3
+                },
+                {
+                    "data_path": "action_result.data.*.accountEnabled",
+                    "data_type": "boolean",
+                    "example_value": true
                 }
             ],
             "render": {
@@ -2183,24 +2483,6 @@
                     "column_order": 1
                 },
                 {
-                    "data_path": "action_result.data.*.user_in_group",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ],
-                    "column_name": "User In Group",
-                    "column_order": 2
-                },
-                {
-                    "data_path": "action_result.summary.user_in_group",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
@@ -2220,6 +2502,189 @@
                     "example_values": [
                         1
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.scope",
+                    "data_type": "string",
+                    "example_value": "Directory.AccessAsUser.All Directory.Read.All Directory.ReadWrite.All Group.ReadWrite.All User.Read User.Read.All User.ReadWrite User.ReadWrite.All profile openid email"
+                },
+                {
+                    "data_path": "action_result.data.*.expires_in",
+                    "data_type": "numeric",
+                    "example_value": 3740
+                },
+                {
+                    "data_path": "action_result.data.*.token_type",
+                    "data_type": "string",
+                    "example_value": "Bearer"
+                },
+                {
+                    "data_path": "action_result.data.*.access_token",
+                    "data_type": "string",
+                    "example_value": "eyJ0eXAiOiJKV1QiLCJub25jZSI6IlBKWEtHUnVOWHdSektqdmRkVktVbUtiNlpVQmtYb1dDNUl4UndqV20yczQiLCJhbGciOiJSUzI1NiIsIng1dCI6Ik1yNS1BVWliZkJpaTdOZDFqQmViYXhib1hXMCIsImtpZCI6Ik1yNS1BVWliZkJpaTdOZDFqQmViYXhib1hXMCJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8xNDBmZTQ2ZC04MTlkLTRiNmQtYjdlZi0xYzBhODI3MGY0ZjAvIiwiaWF0IjoxNjQ2NzE1MTI0LCJuYmYiOjE2NDY3MTUxMjQsImV4cCI6MTY0NjcxOTE2NSwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkFTUUEyLzhUQUFBQXhUSTVWbTZyMDVkRm1zb1o3RXkzRnI1YlltTkhUdUlFQmU5NlJkM083NU09IiwiYW1yIjpbInB3ZCJdLCJhcHBfZGlzcGxheW5hbWUiOiJNUyBBRCIsImFwcGlkIjoiMDViOGUyYzUtOWU2NS00NDlmLTgxYWYtNGNmZDZjZTAzZWJhIiwiYXBwaWRhY3IiOiIxIiwiZmFtaWx5X25hbWUiOiJFZHdhcmRzIiwiZ2l2ZW5fbmFtZSI6Ikhlcm1hbiIsImlkdHlwIjoidXNlciIsImlwYWRkciI6IjEwMy4xMjcuMTY2LjM0IiwibmFtZSI6Ikhlcm1hbiBFZHdhcmRzIiwib2lkIjoiZWViMzY0NWYtZGYxOS00N2ExLThlOGMtZmNkMjM0Y2I1ZjZmIiwicGxhdGYiOiI1IiwicHVpZCI6IjEwMDNCRkZEOUJCNDFCMUEiLCJyaCI6IjAuQVJzQWJlUVBGSjJCYlV1Mzd4d0tnbkQwOEFNQUFBQUFBQUFBd0FBQUFBQUFBQUFiQUc0LiIsInNjcCI6IkRpcmVjdG9yeS5BY2Nlc3NBc1VzZXIuQWxsIERpcmVjdG9yeS5SZWFkLkFsbCBEaXJlY3RvcnkuUmVhZFdyaXRlLkFsbCBHcm91cC5SZWFkV3JpdGUuQWxsIFVzZXIuUmVhZCBVc2VyLlJlYWQuQWxsIFVzZXIuUmVhZFdyaXRlIFVzZXIuUmVhZFdyaXRlLkFsbCBwcm9maWxlIG9wZW5pZCBlbWFpbCIsInN1YiI6Il9ILW9ldkRNNHRreEtwYkJ1c3MxYXRMaTlhcDVJcUNDVG5wYWw4V3Vvd0UiLCJ0ZW5hbnRfcmVnaW9uX3Njb3BlIjoiTkEiLCJ0aWQiOiIxNDBmZTQ2ZC04MTlkLTRiNmQtYjdlZi0xYzBhODI3MGY0ZjAiLCJ1bmlxdWVfbmFtZSI6Imhlcm1hbkBwaGFudG9tZW5naW5lZXJpbmcyLm9ubWljcm9zb2Z0LmNvbSIsInVwbiI6Imhlcm1hbkBwaGFudG9tZW5naW5lZXJpbmcyLm9ubWljcm9zb2Z0LmNvbSIsInV0aSI6Il9Fd1lZY2dKTDBTNW9Jd0ZEbHNGQUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbIjcyOTgyN2UzLTljMTQtNDlmNy1iYjFiLTk2MDhmMTU2YmJiOCIsImZlOTMwYmU3LTVlNjItNDdkYi05MWFmLTk4YzNhNDlhMzhiMSIsImM0ZTM5YmQ5LTExMDAtNDZkMy04YzY1LWZiMTYwZGEwMDcxZiIsIjE5NGFlNGNiLWIxMjYtNDBiMi1iZDViLTYwOTFiMzgwOTc3ZCIsIjVkNmI2YmI3LWRlNzEtNDYyMy1iNGFmLTk2MzgwYTM1MjUwOSIsIjYyZTkwMzk0LTY5ZjUtNDIzNy05MTkwLTAxMjE3NzE0NWUxMCIsImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdLCJ4bXNfc3QiOnsic3ViIjoiQkJtekFOMzdGSkNwS04ycDVwSVhNLW9sdlNWakNzZFBiV3E4Q0VNdmt4RSJ9LCJ4bXNfdGNkdCI6MTQ3Nzk0NTA1Nn0.DQh8iE7dR-EiELXOmP2c8HauQgUWKGn3n3kcBCOli5wdpeZtPwIr5xeQR4J206iFZbTdsQA72DZwe_-FelfmEvEf72jjo-BznaROzc1xcDVo1i3XEB6Ih2sYRIttrk6OeP7D-gVqvSjU_X-MTzawuzN3ZKdpraEx6LotPkNLVLjul95KheuDWOovdYFCcX0eQOa3GbDq02CQfuJun0Yq5hLWhrEgBxBB0VtpSTrvpQ-3_ABh8RHPPwnIyvMMkPfSBu6hiSG8UjFi6qtpFvaLsKu4Ej6ZT6ZMzdnXmuH4cqZ3bmQSrCv2DNgNRHeldyst8Vi95SuW-ahn6qv0aTGnxg"
+                },
+                {
+                    "data_path": "action_result.data.*.refresh_token",
+                    "data_type": "string",
+                    "example_value": "0.ARsAbeQPFJ2BbUu37xwKgnD08MXiuAVlnp9Ega9M_WzgProbAG4.AgABAAAAAAD--DLA3VO7QrddgJg7WevrAgDs_wQA9P9B2c6TCyYfiD58mRHp9b8pvRzgBZNnlHrrhsJc2IdnFHM5hTcqK1BAVVVAo7eQ_pTGcdkAQG0XUdL1gGYp4gVqGzLJopipeEg6c32fuchh4erO6LH5B9uL5XCaxF8XUCwQeDOw6q_LV7zNi-DS9X9-PsHuEl5AXXG0zdwFjc_-tGLHImcNYPQEq-t-JUL-utW6_gq3cI4wwVozSU1rZ0jRMYg8KoSnE9qlAOL-tuv45TDeDHESpsfXjLloxX0Lv7WzXFkAx3uQsL0JKz3KdinQyfZ4ZsuGBlT4vSzbGVMBJ_Ry5JZ67ozDv4HfN4g7QCmsrTGn7BBHe0IRMWhuF5EMzaIF6s6KUa3VvXl-JgjIEetwhkFYk9CQCzmfQzYX6H0lOCqtgVHpexf8hT6HeW_PMJvQbdPXR-bmP9ZLSyyHTUNufGmrawyA5o7kSaxx9rPKv3BOArnmLFQdNz13BQ-RWaCxHDi15tnahwmunY8yuPLoyEhbtXxZt1hy8SP1RpwDVdMtx-xxswXCz1I7BEiaSWj7CwbB4TesIHn_zqQ72xgu7zLnU4d2qyTuKywOmGalQM73GE6YMFedVs0Z_kJteR4WFyo06A8INY1XTSUOjYCqtAxdnf66JD8mL73lsvSE5CqRZEnbm911N_S-OAxXwrg3omphIWf4B2O2Q9d6XQ5HLKu6sTvPHYTvehXInMcXOlya43DEDT7l_5b-ZogOx7VEoQVMVIthoyB0JqJJsqDHtHtLj3XYUDT95KFMmgWur8VrBis5GBo-JIcD9bBmjMt_1XHueuem8k1uTtT6QMXdvcMFSWWo9SE68nhGFYnkTOw0bwC03kJvpg26Kovd1K7BseHSmjucYc3gkFROUonjTiMC9RYhmQYwpHuqfAl35ecapIoKZcnWnLWGURqmT6tXXm7RDoUCvPCqzl1d5ttgkuM"
+                },
+                {
+                    "data_path": "action_result.data.*.ext_expires_in",
+                    "data_type": "numeric",
+                    "example_value": 3740
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.id",
+                    "data_type": "string",
+                    "example_value": "49233413-24c6-4516-a9e1-4d5f87fe34fd"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.mail",
+                    "data_type": "string",
+                    "example_value": "TestgroupforMSGraph@phantomengineering2.onmicrosoft.com"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.theme",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.visibility",
+                    "data_type": "string",
+                    "example_value": "Private"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.@odata.type",
+                    "data_type": "string",
+                    "example_value": "#microsoft.graph.group"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.description",
+                    "data_type": "string",
+                    "example_value": "Test group for MSGraph"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.displayName",
+                    "data_type": "string",
+                    "example_value": "Test group for MSGraph"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.mailEnabled",
+                    "data_type": "boolean",
+                    "example_value": true
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.mailNickname",
+                    "data_type": "string",
+                    "example_value": "TestgroupforMSGraph"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.classification",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.membershipRule",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.createdDateTime",
+                    "data_type": "string",
+                    "example_value": "2022-02-25T12:05:22Z"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.deletedDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.renewedDateTime",
+                    "data_type": "string",
+                    "example_value": "2022-02-25T12:05:22Z"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.securityEnabled",
+                    "data_type": "boolean",
+                    "example_value": true
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.preferredLanguage",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.expirationDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.isAssignableToRole",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.securityIdentifier",
+                    "data_type": "string",
+                    "example_value": "S-1-12-1-1227043859-1159079110-1598939561-4248108679"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.onPremisesDomainName",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.onPremisesNetBiosName",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.onPremisesSyncEnabled",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.preferredDataLocation",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.onPremisesSamAccountName",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.onPremisesLastSyncDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.onPremisesSecurityIdentifier",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.membershipRuleProcessingState",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.@odata.context",
+                    "data_type": "string",
+                    "example_value": "https://graph.microsoft.com/v1.0/$metadata#directoryObjects"
+                },
+                {
+                    "data_path": "action_result.summary.message",
+                    "data_type": "string",
+                    "example_value": "User is member of group"
+                },
+                {
+                    "data_path": "action_result.data.*.user_in_group",
+                    "correct_data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.user_in_group",
+                    "correct_data_type": "string"
                 }
             ],
             "render": {
@@ -2230,7 +2695,7 @@
         {
             "action": "list directory roles",
             "description": "List the directory roles in a tenant",
-            "verbose": "<p>Pagination is not implemented for this action as this endpoint does not support pagination. Here is the <b><a href='https://docs.microsoft.com/en-us/previous-versions/azure/ad/graph/howto/azure-ad-graph-api-supported-queries-filters-and-paging-options' target='_blank'>Documentation</a></b> for the same.</p>",
+            "verbose": "<p>Pagination is not implemented for this action as this endpoint does not support pagination. Here is the <b><a href='https://docs.microsoft.com/en-us/graph/paging' target='_blank'>Documentation</a></b> for the same.</p>",
             "type": "investigate",
             "identifier": "list_directory_roles",
             "read_only": true,
@@ -2273,7 +2738,7 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.objectId",
+                    "data_path": "action_result.data.*.id",
                     "data_type": "string",
                     "example_values": [
                         "02b238cb-0d15-454b-aae6-0e94993a3207"
@@ -2345,6 +2810,11 @@
                     "example_values": [
                         1
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.deletedDateTime",
+                    "data_type": "string",
+                    "example_value": ""
                 }
             ],
             "render": {

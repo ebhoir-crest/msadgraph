@@ -1,4 +1,4 @@
-# File: azureadgraph_connector.py
+# File: msadgraph_connector.py
 #
 # Copyright (c) 2019-2022 Splunk Inc.
 #
@@ -22,6 +22,7 @@ import pwd
 import re
 import sys
 import time
+from urllib import response
 
 import phantom.app as phantom
 import requests
@@ -30,7 +31,7 @@ from django.http import HttpResponse
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
-from azureadgraph_consts import *
+from msadgraph_consts import *
 
 try:
     import urllib.parse as urlparse
@@ -40,8 +41,7 @@ except ImportError:
     import urlparse
 
 TC_FILE = "oauth_task.out"
-SERVER_TOKEN_URL = "https://login.microsoftonline.com/{0}/oauth2/token"
-# SERVER_TOKEN_URL = "https://login.microsoftonline.com/{0}/oauth2/v2.0/token"
+SERVER_TOKEN_URL = "https://login.microsoftonline.com/{0}/oauth2/v2.0/token"
 MSGRAPH_API_URL = "https://graph.microsoft.com/v1.0"
 AZUREADGRAPH_API_URL = "https://graph.windows.net"
 MAX_END_OFFSET_VAL = 2147483646
@@ -321,6 +321,27 @@ class AzureADGraphConnector(BaseConnector):
             error_msg = "Unknown error occurred. Please check the asset configuration and|or action parameters."
 
         return "Error Code: {0}. Error Message: {1}".format(error_code, error_msg)
+
+    def _format_params_to_query(self, parameters):
+        """If you just pass with the params argument into the request, commas will be encoded to %2C
+           (Requests also uses the urlencode method on a dictionary)
+           The API uses literal commas and %2C differently. %2C would be for when the actual field has a comma, and
+           ',' is for creating a list in the query.
+           For example: ?propertyName=isTure,floor&propertyValue=false,Balcony%2Cupper
+           %1A is the code for substitute character, which seemed fitting and unused, though urlencode will
+           encode this into %251A.
+        """
+        for k, v in parameters.items():
+            try:
+                if "%1A" in v:
+                    self.debug_print("Check the _format_params_to_query method")
+                self.debug_print(v)
+                v.replace("%2C", "%1A")
+            except TypeError:
+                # v is a boolean or something
+                pass
+
+        return urlparse.urlencode(parameters).replace("%2C", ",").replace("%252C", "%2C").replace("%20", " ").replace("%2B", "+")
 
     def _process_empty_response(self, response, action_result):
         """ This function is used to process empty response.
@@ -638,14 +659,13 @@ class AzureADGraphConnector(BaseConnector):
             self._client_id = urlparse.quote(self._client_id)
             self._tenant = urlparse.quote(self._tenant)
 
-        admin_consent_url_base = "https://login.microsoftonline.com/{0}/oauth2/authorize".format(self._tenant)
+        admin_consent_url_base = "https://login.microsoftonline.com/{0}/oauth2/v2.0/authorize".format(self._tenant)
 
         query_params = {
             'client_id': self._client_id,
             'redirect_uri': redirect_uri,
             'state': self.get_asset_id(),
             'scope': MS_AZURE_CODE_GENERATION_SCOPE,
-            'resource': urlparse.quote('https://{0}/'.format(AZUREADGRAPH_API_REGION[config.get(MS_AZURE_URL, "Global")]), safe=''),
             'response_type': "code"
         }
 
@@ -710,7 +730,7 @@ class AzureADGraphConnector(BaseConnector):
             return action_result.get_status()
 
         self.save_progress("Getting info about a single user to verify token")
-        params = {'api-version': '1.6', '$top': '1'}
+        params = {'$top': '1'}
         ret_val, response = self._make_rest_call_helper(action_result, "/users", params=params)
 
         if phantom.is_fail(ret_val):
@@ -732,16 +752,19 @@ class AzureADGraphConnector(BaseConnector):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        parameters = {
-            'api-version': '1.6'
-        }
+        parameters = dict()
         filter_string = param.get('filter_string')
+        select_string  = param.get('select_string')
+
         if filter_string:
             parameters['$filter'] = filter_string
+        if select_string:
+            parameters['$select'] = select_string
 
         endpoint = '/users'
+        endpoint += '?{}'.format(self._format_params_to_query(parameters))
 
-        ret_val = self._handle_pagination(action_result, endpoint, parameters=parameters)
+        ret_val = self._handle_pagination(action_result, endpoint)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -760,19 +783,16 @@ class AzureADGraphConnector(BaseConnector):
         temp_password = self._handle_py_ver_compat_for_input_str(param.get('temp_password', ''))
         force_change = param.get('force_change', True)
 
-        parameters = {'api-version': '1.6'}
-
         data = {
             'passwordProfile': {
-                'forceChangePasswordNextLogin': force_change
+                'forceChangePasswordNextLogin': force_change,
+                'password':temp_password
             }
         }
-        if temp_password != '':
-            data['passwordProfile']['password'] = temp_password
 
         endpoint = '/users/{0}'.format(user_id)
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=parameters, json=data, method='patch')
+        ret_val = self._make_rest_call_helper(action_result, endpoint, json=data, method='patch')
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -789,14 +809,13 @@ class AzureADGraphConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = self._handle_py_ver_compat_for_input_str(param['user_id'])
-        parameters = {'api-version': '1.6'}
 
         data = {
             "accountEnabled": True
         }
 
         endpoint = '/users/{}'.format(user_id)
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=parameters, json=data, method='patch')
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, json=data, method='patch')
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -815,10 +834,9 @@ class AzureADGraphConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = self._handle_py_ver_compat_for_input_str(param['user_id'])
-        parameters = {'api-version': '1.6'}
-        endpoint = '/users/{0}/invalidateAllRefreshTokens'.format(user_id)
+        endpoint = '/users/{0}/revokeSignInSessions'.format(user_id)
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=parameters, method='post')
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, method='post')
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -836,14 +854,13 @@ class AzureADGraphConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = self._handle_py_ver_compat_for_input_str(param['user_id'])
-        parameters = {'api-version': '1.6'}
 
         data = {
             "accountEnabled": False
         }
 
         endpoint = '/users/{}'.format(user_id)
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=parameters, json=data, method='patch')
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, json=data, method='patch')
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -861,13 +878,20 @@ class AzureADGraphConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         user_id = self._handle_py_ver_compat_for_input_str(param.get('user_id'))
-        parameters = {'api-version': '1.6'}
+
+        parameters = dict()
+        select_string = self._handle_py_ver_compat_for_input_str(param.get('select_string'))
+        if select_string:
+            parameters['$select'] = select_string
+
         if user_id:
             endpoint = '/users/{}'.format(user_id)
+            endpoint += '?{}'.format(self._format_params_to_query(parameters))
         else:
             endpoint = '/users'
+            endpoint += '?{}'.format(self._format_params_to_query(parameters))
 
-        ret_val = self._handle_pagination(action_result, endpoint, parameters=parameters)
+        ret_val = self._handle_pagination(action_result, endpoint)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -890,14 +914,13 @@ class AzureADGraphConnector(BaseConnector):
         user_id = self._handle_py_ver_compat_for_input_str(param['user_id'])
         attribute = self._handle_py_ver_compat_for_input_str(param['attribute'])
         attribute_value = self._handle_py_ver_compat_for_input_str(param['attribute_value'])
-        parameters = {'api-version': '1.6'}
 
         data = {
             attribute: attribute_value
         }
 
         endpoint = '/users/{}'.format(user_id)
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=parameters, json=data, method='patch')
+        ret_val = self._make_rest_call_helper(action_result, endpoint, json=data, method='patch')
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -916,16 +939,12 @@ class AzureADGraphConnector(BaseConnector):
         object_id = self._handle_py_ver_compat_for_input_str(param['group_object_id'])
         user_id = self._handle_py_ver_compat_for_input_str(param['user_id'])
 
-        parameters = {
-            'api-version': '1.6'
-        }
-
         data = {
-            'url': "https://{}/{}/directoryObjects/{}".format(AZUREADGRAPH_API_REGION[config.get(MS_AZURE_URL, "Global")], self._tenant, user_id)
+            '@odata.id': "https://{}/v1.0/directoryObjects/{}".format(AZUREADGRAPH_API_REGION[config.get(MS_AZURE_URL, "Global")], user_id)
         }
 
-        endpoint = '/groups/{}/$links/members'.format(object_id)
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=parameters, json=data, method='post')
+        endpoint = '/groups/{}/members/$ref'.format(object_id)
+        ret_val = self._make_rest_call_helper(action_result, endpoint, json=data, method='post')
 
         summary = action_result.update_summary({})
         if phantom.is_fail(ret_val):
@@ -947,12 +966,8 @@ class AzureADGraphConnector(BaseConnector):
         object_id = self._handle_py_ver_compat_for_input_str(param['group_object_id'])
         user_id = self._handle_py_ver_compat_for_input_str(param['user_id'])
 
-        parameters = {
-            'api-version': '1.6'
-        }
-
-        endpoint = '/groups/{}/$links/members/{}'.format(object_id, user_id)
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=parameters, method='delete')
+        endpoint = '/groups/{}/members/{}/$ref'.format(object_id, user_id)
+        ret_val = self._make_rest_call_helper(action_result, endpoint, method='delete')
 
         summary = action_result.update_summary({})
         if phantom.is_fail(ret_val):
@@ -971,10 +986,14 @@ class AzureADGraphConnector(BaseConnector):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        parameters = {'api-version': '1.6'}
+        parameters = dict()
+        select_string  = param.get('select_string')
+        if select_string:
+            parameters['$select'] = select_string
 
         endpoint = '/groups'
-        ret_val = self._handle_pagination(action_result, endpoint, parameters=parameters)
+        endpoint += '?{}'.format(self._format_params_to_query(parameters))
+        ret_val = self._handle_pagination(action_result, endpoint)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -989,11 +1008,17 @@ class AzureADGraphConnector(BaseConnector):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
 
+        parameters = dict()
+        select_string = param.get('select_string')
+        if select_string:
+            parameters['$select'] = select_string
+
         object_id = self._handle_py_ver_compat_for_input_str(param['object_id'])
-        parameters = {'api-version': '1.6'}
 
         endpoint = '/groups/{}'.format(object_id)
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=parameters, method='get')
+        endpoint += '?{}'.format(self._format_params_to_query(parameters))
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, method='get')
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -1005,68 +1030,28 @@ class AzureADGraphConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def get_user_id_map(self, action_result, user=None):
-        # Get list of members and using their object IDs, map them to the URLs
-        parameters = {'api-version': '1.6'}
-        endpoint = '/users'
-        if user:
-            endpoint = endpoint + '/' + user
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=parameters, method='get')
-
-        user_id_map = dict()
-
-        if phantom.is_fail(ret_val):
-            return ret_val, user_id_map
-
-        if user:
-            user_id_map[response.get('objectId')] = response.get('displayName')
-        else:
-            for user in response.get('value', []):
-                user_id_map[user['objectId']] = user['displayName']
-
-        return ret_val, user_id_map
-
     def _handle_list_group_members(self, param):
 
-        config = self.get_config()
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         object_id = self._handle_py_ver_compat_for_input_str(param['group_object_id'])
-        parameters = {'api-version': '1.6'}
 
-        # Returns a list of group members' directory object URLs
-        endpoint = '/groups/{}/$links/members'.format(object_id)
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=parameters, method='get')
+        parameters = dict()
+        select_string = param.get('select_string')
+        if select_string:
+            parameters['$select'] = select_string
+
+        endpoint = '/groups/{}/members'.format(object_id)
+        endpoint += '?{}'.format(self._format_params_to_query(parameters))
+
+        ret_val = self._handle_pagination(action_result, endpoint)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
-        # action_result.add_data(response)
-        user_object_ids = list()
-        for item in response.get('value', []):
-            url = item.get('url', '')
-            match = re.match(
-                AZUREADGRAPH_API_REGEX.format(
-                    AZUREADGRAPH_API_REGION[config.get(MS_AZURE_URL, "Global")], self._tenant
-                ),
-                url
-            )
-            if match is not None:
-                user_object_ids.append(match.group(1))
-
-        user_id_map_ret_val, user_id_map = self.get_user_id_map(action_result)
-
-        # Mapping
-        for item in user_object_ids:
-            data = {
-                'displayName': user_id_map[item],
-                'objectId': item
-            }
-            action_result.add_data(data)
-
         summary = action_result.update_summary({})
-        summary['num_members'] = len(user_object_ids)
+        summary['num_users'] = action_result.get_data_size()
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -1075,10 +1060,8 @@ class AzureADGraphConnector(BaseConnector):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        parameters = {'api-version': '1.6'}
-
         endpoint = '/directoryRoles'
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=parameters, method='get')
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, method='get')
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -1094,50 +1077,28 @@ class AzureADGraphConnector(BaseConnector):
 
     def _handle_validate_group(self, param):
 
-        config = self.get_config()
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         object_id = self._handle_py_ver_compat_for_input_str(param['group_object_id'])
         user_id = self._handle_py_ver_compat_for_input_str(param['user_id'])
-        parameters = {'api-version': '1.6'}
 
-        # Returns a list of group members' directory object URLs
-        endpoint = '/groups/{}/$links/members'.format(object_id)
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=parameters, method='get')
+        endpoint = '/users/{}/memberOf?$filter=id eq \'{}\''.format(user_id, object_id)
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, method='get')
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
+        user_id_map = dict()
+
+        for user in response.get('value', []):
+            user_id_map[user['id']] = user['displayName']
+
         # action_result.add_data(response)
-        user_object_ids = list()
-        for item in response.get('value', []):
-            url = item.get('url', '')
-            match = re.match(
-                AZUREADGRAPH_API_REGEX.format(
-                    AZUREADGRAPH_API_REGION[config.get(MS_AZURE_URL, "Global")], self._tenant
-                ),
-                url
-            )
-            if match is not None:
-                user_object_ids.append(match.group(1))
+        # summary = action_result.update_summary({})
+        # summary['message'] = "User is member of group"
 
-        user_id_map_ret_val, user_id_map = self.get_user_id_map(action_result, user=user_id)
-
-        user_in_group = False
-
-        if phantom.is_fail(user_id_map_ret_val):
-            return action_result.get_status()
-        # Look for user in group
-        for item in user_object_ids:
-            if user_id_map.get(item):
-                user_in_group = True
-
-        action_result.add_data({'user_in_group': user_in_group})
-        summary = action_result.update_summary({})
-        summary['user_in_group'] = user_in_group
-
-        return action_result.set_status(phantom.APP_SUCCESS)
+        return action_result.set_status(phantom.APP_SUCCESS, "User is member of group")
 
     def _get_token(self, action_result, from_action=False):
         """ This function is used to get a token via REST Call.
@@ -1253,9 +1214,6 @@ class AzureADGraphConnector(BaseConnector):
         elif action_id == 'set_user_attribute':
             ret_val = self._handle_set_user_attribute(param)
 
-        elif action_id == 'list_user_groups':
-            ret_val = self._handle_list_user_groups(param)
-
         elif action_id == 'remove_user':
             ret_val = self._handle_remove_user(param)
 
@@ -1276,9 +1234,6 @@ class AzureADGraphConnector(BaseConnector):
 
         elif action_id == 'list_directory_roles':
             ret_val = self._handle_list_directory_roles(param)
-
-        elif action_id == 'list_policies':
-            ret_val = self._handle_list_policies(param)
 
         elif action_id == 'generate_token':
             ret_val = self._handle_generate_token(param)
