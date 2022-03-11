@@ -526,11 +526,6 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.scope",
-                    "data_type": "string",
-                    "example_value": "Directory.AccessAsUser.All Directory.Read.All Directory.ReadWrite.All Group.ReadWrite.All User.Read User.Read.All User.ReadWrite User.ReadWrite.All profile openid email"
-                },
-                {
                     "data_path": "action_result.data.*.mobilePhone",
                     "data_type": "string",
                     "example_value": ""
