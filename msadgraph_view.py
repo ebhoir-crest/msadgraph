@@ -31,7 +31,7 @@ def get_ctx_result(provides, result):
     return ctx_result
 
 
-def display_list_user_attributes(provides, all_app_runs, context):
+def display_view(provides, all_app_runs, context):
 
     context['results'] = results = []
     for summary, action_results in all_app_runs:
@@ -43,7 +43,7 @@ def display_list_user_attributes(provides, all_app_runs, context):
             results.append(ctx_result)
 
     if provides == "list users":
-        return_page = "msadgraph_list.html"
+        return_page = "msadgraph_list_users.html"
     if provides == "list user attributes":
         return_page = "msadgraph_list_user_attributes.html"
     if provides == "list groups":

@@ -11,9 +11,9 @@
     "publisher": "Splunk",
     "contributors": [
         {
-          "name": "Ekta Bhoir"
+            "name": "Ekta Bhoir"
         }
-      ],
+    ],
     "license": "Copyright (c) 2019-2022 Splunk Inc.",
     "app_version": "1.0.0",
     "python_version": "3",
@@ -103,6 +103,13 @@
                     "data_type": "string",
                     "example_values": [
                         "startswith(displayName,'User')"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.select_string",
+                    "data_type": "string",
+                    "example_value": [
+                        "displayName"
                     ]
                 },
                 {
@@ -225,6 +232,18 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.id",
+                    "data_type": "string",
+                    "column_name": "Object ID",
+                    "column_order": 1,
+                    "example_values": [
+                        "e4c722ac-3b83-478d-8f52-c388885dc30f"
+                    ],
+                    "contains": [
+                        "azure object id"
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.immutableId",
                     "data_type": "string"
                 },
@@ -272,16 +291,9 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.id",
+                    "data_path": "action_result.data.*.mobilePhone",
                     "data_type": "string",
-                    "column_name": "Object ID",
-                    "column_order": 1,
-                    "example_values": [
-                        "e4c722ac-3b83-478d-8f52-c388885dc30f"
-                    ],
-                    "contains": [
-                        "azure object id"
-                    ]
+                    "example_value": ""
                 },
                 {
                     "data_path": "action_result.data.*.objectType",
@@ -296,6 +308,11 @@
                     "example_values": [
                         "Microsoft.DirectoryServices.User"
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.officeLocation",
+                    "data_type": "string",
+                    "example_value": ""
                 },
                 {
                     "data_path": "action_result.data.*.onPremisesDistinguishedName",
@@ -524,23 +541,12 @@
                     "example_values": [
                         1
                     ]
-                },
-                {
-                    "data_path": "action_result.data.*.mobilePhone",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.officeLocation",
-                    "data_type": "string",
-                    "example_value": ""
                 }
             ],
             "render": {
-                "width": 15,
-                "title": "User Listing",
-                "type": "table",
-                "height": 5
+                "type": "custom",
+                "title": "List Groups",
+                "view": "msadgraph_view.display_view"
             },
             "versions": "EQ(*)"
         },
@@ -710,6 +716,11 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.@odata.context",
+                    "data_type": "string",
+                    "example_value": "https://graph.microsoft.com/v1.0/$metadata#Edm.Boolean"
+                },
+                {
                     "data_path": "action_result.data.*.odata.metadata",
                     "data_type": "string",
                     "example_values": [
@@ -751,19 +762,14 @@
                     ]
                 },
                 {
-                    "data_path": "summary.total_objects_successful",
+                    "data_path": "summary.total_objects",
                     "data_type": "numeric",
                     "example_values": [
                         1
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.@odata.context",
-                    "data_type": "string",
-                    "example_value": "https://graph.microsoft.com/v1.0/$metadata#Edm.Boolean"
-                },
-                {
-                    "data_path": "summary.total_objects",
+                    "data_path": "summary.total_objects_successful",
                     "data_type": "numeric",
                     "example_values": [
                         1
@@ -981,6 +987,13 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.parameter.select_string",
+                    "data_type": "string",
+                    "example_value": [
+                        "displayName"
+                    ]
+                },
+                {
                     "data_path": "action_result.parameter.user_id",
                     "data_type": "string",
                     "example_values": [
@@ -991,6 +1004,11 @@
                         "azure object id",
                         "email"
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.@odata.context",
+                    "data_type": "string",
+                    "example_value": "https://graph.microsoft.com/v1.0/$metadata#users/$entity"
                 },
                 {
                     "data_path": "action_result.data.*.accountEnabled",
@@ -1101,6 +1119,26 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.id",
+                    "data_type": "string",
+                    "example_value": "7d55d7e6-cf5a-4dd2-a176-57a3c33b7fa9"
+                },
+                {
+                    "data_path": "action_result.data.*.identities.*.issuer",
+                    "data_type": "string",
+                    "example_value": "phantomengineering2.onmicrosoft.com"
+                },
+                {
+                    "data_path": "action_result.data.*.identities.*.issuerAssignedId",
+                    "data_type": "string",
+                    "example_value": "test2@phantomengineering2.onmicrosoft.com"
+                },
+                {
+                    "data_path": "action_result.data.*.identities.*.signInType",
+                    "data_type": "string",
+                    "example_value": "userPrincipalName"
+                },
+                {
                     "data_path": "action_result.data.*.immutableId",
                     "data_type": "string"
                 },
@@ -1139,6 +1177,11 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.mobilePhone",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
                     "data_path": "action_result.data.*.objectId",
                     "data_type": "string",
                     "example_values": [
@@ -1163,6 +1206,11 @@
                     "example_values": [
                         "Microsoft.DirectoryServices.User"
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.officeLocation",
+                    "data_type": "string",
+                    "example_value": ""
                 },
                 {
                     "data_path": "action_result.data.*.onPremisesDistinguishedName",
@@ -1332,10 +1380,6 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.summary.user_enabled",
-                    "correct_data_type": "string"
-                },
-                {
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
@@ -1356,47 +1400,12 @@
                     "example_values": [
                         1
                     ]
-                },
-                {
-                    "data_path": "action_result.data.*.id",
-                    "data_type": "string",
-                    "example_value": "7d55d7e6-cf5a-4dd2-a176-57a3c33b7fa9"
-                },
-                {
-                    "data_path": "action_result.data.*.mobilePhone",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.@odata.context",
-                    "data_type": "string",
-                    "example_value": "https://graph.microsoft.com/v1.0/$metadata#users/$entity"
-                },
-                {
-                    "data_path": "action_result.data.*.officeLocation",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.identities.*.issuer",
-                    "data_type": "string",
-                    "example_value": "phantomengineering2.onmicrosoft.com"
-                },
-                {
-                    "data_path": "action_result.data.*.identities.*.signInType",
-                    "data_type": "string",
-                    "example_value": "userPrincipalName"
-                },
-                {
-                    "data_path": "action_result.data.*.identities.*.issuerAssignedId",
-                    "data_type": "string",
-                    "example_value": "test2@phantomengineering2.onmicrosoft.com"
                 }
             ],
             "render": {
                 "type": "custom",
-                "title": "List User Attributes",
-                "view": "msadgraph_view.display_list_user_attributes"
+                "title": "List Groups",
+                "view": "msadgraph_view.display_view"
             },
             "versions": "EQ(*)"
         },
@@ -1750,6 +1759,28 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.parameter.select_string",
+                    "data_type": "string",
+                    "example_value": [
+                        "displayName"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.classification",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.createdDateTime",
+                    "data_type": "string",
+                    "example_value": "2021-03-25T18:40:53Z"
+                },
+                {
+                    "data_path": "action_result.data.*.deletedDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
                     "data_path": "action_result.data.*.deletionTimestamp",
                     "data_type": "string"
                 },
@@ -1774,6 +1805,28 @@
                     ],
                     "column_name": "Display Name",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.expirationDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.id",
+                    "data_type": "string",
+                    "example_values": [
+                        "2a201c95-101b-42d9-a7af-9a2fdf8193f1"
+                    ],
+                    "contains": [
+                        "azure object id"
+                    ],
+                    "column_name": "Object ID",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.isAssignableToRole",
+                    "data_type": "string",
+                    "example_value": ""
                 },
                 {
                     "data_path": "action_result.data.*.lastDirSyncTime",
@@ -1805,16 +1858,14 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.id",
+                    "data_path": "action_result.data.*.membershipRule",
                     "data_type": "string",
-                    "example_values": [
-                        "2a201c95-101b-42d9-a7af-9a2fdf8193f1"
-                    ],
-                    "contains": [
-                        "azure object id"
-                    ],
-                    "column_name": "Object ID",
-                    "column_order": 2
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.membershipRuleProcessingState",
+                    "data_type": "string",
+                    "example_value": ""
                 },
                 {
                     "data_path": "action_result.data.*.objectType",
@@ -1838,6 +1889,11 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.onPremisesLastSyncDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
                     "data_path": "action_result.data.*.onPremisesNetBiosName",
                     "data_type": "string"
                 },
@@ -1850,11 +1906,31 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.onPremisesSyncEnabled",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.preferredDataLocation",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.preferredLanguage",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
                     "data_path": "action_result.data.*.proxyAddresses",
                     "data_type": "string",
                     "example_values": [
                         "SMTP:test-h@test.onmicrosoft.com"
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.renewedDateTime",
+                    "data_type": "string",
+                    "example_value": "2021-03-25T18:40:53Z"
                 },
                 {
                     "data_path": "action_result.data.*.securityEnabled",
@@ -1863,6 +1939,21 @@
                         true,
                         false
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.securityIdentifier",
+                    "data_type": "string",
+                    "example_value": "S-1-12-1-294681889-1319597617-672379543-28952017"
+                },
+                {
+                    "data_path": "action_result.data.*.theme",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.visibility",
+                    "data_type": "string",
+                    "example_value": "Private"
                 },
                 {
                     "data_path": "action_result.summary.num_groups",
@@ -1891,90 +1982,12 @@
                     "example_values": [
                         1
                     ]
-                },
-                {
-                    "data_path": "action_result.parameter.select_string",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.theme",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.visibility",
-                    "data_type": "string",
-                    "example_value": "Private"
-                },
-                {
-                    "data_path": "action_result.data.*.classification",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.membershipRule",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.createdDateTime",
-                    "data_type": "string",
-                    "example_value": "2021-03-25T18:40:53Z"
-                },
-                {
-                    "data_path": "action_result.data.*.deletedDateTime",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.renewedDateTime",
-                    "data_type": "string",
-                    "example_value": "2021-03-25T18:40:53Z"
-                },
-                {
-                    "data_path": "action_result.data.*.preferredLanguage",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.expirationDateTime",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.isAssignableToRole",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.securityIdentifier",
-                    "data_type": "string",
-                    "example_value": "S-1-12-1-294681889-1319597617-672379543-28952017"
-                },
-                {
-                    "data_path": "action_result.data.*.onPremisesSyncEnabled",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.preferredDataLocation",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.onPremisesLastSyncDateTime",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.membershipRuleProcessingState",
-                    "data_type": "string",
-                    "example_value": ""
                 }
             ],
             "render": {
-                "type": "table"
+                "type": "custom",
+                "title": "List Groups",
+                "view": "msadgraph_view.display_view"
             },
             "versions": "EQ(*)"
         },
@@ -2022,6 +2035,33 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.parameter.select_string",
+                    "data_type": "string",
+                    "example_value": [
+                        "displayName"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.@odata.context",
+                    "data_type": "string",
+                    "example_value": "https://graph.microsoft.com/v1.0/$metadata#groups(id,displayName)/$entity"
+                },
+                {
+                    "data_path": "action_result.data.*.classification",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.createdDateTime",
+                    "data_type": "string",
+                    "example_value": "2020-08-05T11:59:49Z"
+                },
+                {
+                    "data_path": "action_result.data.*.deletedDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
                     "data_path": "action_result.data.*.deletionTimestamp",
                     "data_type": "string"
                 },
@@ -2044,6 +2084,28 @@
                     ],
                     "column_name": "Display Name",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.expirationDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.id",
+                    "data_type": "string",
+                    "example_values": [
+                        "ddb876b3-603a-437b-9814-2d46a2219a1e"
+                    ],
+                    "contains": [
+                        "azure object id"
+                    ],
+                    "column_name": "Object ID",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.isAssignableToRole",
+                    "data_type": "string",
+                    "example_value": ""
                 },
                 {
                     "data_path": "action_result.data.*.lastDirSyncTime",
@@ -2077,16 +2139,14 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.id",
+                    "data_path": "action_result.data.*.membershipRule",
                     "data_type": "string",
-                    "example_values": [
-                        "ddb876b3-603a-437b-9814-2d46a2219a1e"
-                    ],
-                    "contains": [
-                        "azure object id"
-                    ],
-                    "column_name": "Object ID",
-                    "column_order": 1
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.membershipRuleProcessingState",
+                    "data_type": "string",
+                    "example_value": ""
                 },
                 {
                     "data_path": "action_result.data.*.objectType",
@@ -2117,6 +2177,11 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.onPremisesLastSyncDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
                     "data_path": "action_result.data.*.onPremisesNetBiosName",
                     "data_type": "string"
                 },
@@ -2129,11 +2194,31 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.onPremisesSyncEnabled",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.preferredDataLocation",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.preferredLanguage",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
                     "data_path": "action_result.data.*.proxyAddresses",
                     "data_type": "string",
                     "example_values": [
                         "SMTP:bc7f9cabe@test.onmicrosoft.com"
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.renewedDateTime",
+                    "data_type": "string",
+                    "example_value": "2020-08-05T11:59:49Z"
                 },
                 {
                     "data_path": "action_result.data.*.securityEnabled",
@@ -2144,6 +2229,21 @@
                     ],
                     "column_name": "Security Enabled",
                     "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.securityIdentifier",
+                    "data_type": "string",
+                    "example_value": "S-1-12-1-909260723-1083662375-1952945031-2402852259"
+                },
+                {
+                    "data_path": "action_result.data.*.theme",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.visibility",
+                    "data_type": "string",
+                    "example_value": ""
                 },
                 {
                     "data_path": "action_result.summary.display_name",
@@ -2172,90 +2272,12 @@
                     "example_values": [
                         1
                     ]
-                },
-                {
-                    "data_path": "action_result.data.*.@odata.context",
-                    "data_type": "string",
-                    "example_value": "https://graph.microsoft.com/v1.0/$metadata#groups(id,displayName)/$entity"
-                },
-                {
-                    "data_path": "action_result.data.*.theme",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.visibility",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.classification",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.membershipRule",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.createdDateTime",
-                    "data_type": "string",
-                    "example_value": "2020-08-05T11:59:49Z"
-                },
-                {
-                    "data_path": "action_result.data.*.deletedDateTime",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.renewedDateTime",
-                    "data_type": "string",
-                    "example_value": "2020-08-05T11:59:49Z"
-                },
-                {
-                    "data_path": "action_result.data.*.preferredLanguage",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.expirationDateTime",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.isAssignableToRole",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.securityIdentifier",
-                    "data_type": "string",
-                    "example_value": "S-1-12-1-909260723-1083662375-1952945031-2402852259"
-                },
-                {
-                    "data_path": "action_result.data.*.onPremisesSyncEnabled",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.preferredDataLocation",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.onPremisesLastSyncDateTime",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.membershipRuleProcessingState",
-                    "data_type": "string",
-                    "example_value": ""
                 }
             ],
             "render": {
-                "type": "table"
+                "type": "custom",
+                "title": "List Groups",
+                "view": "msadgraph_view.display_view"
             },
             "versions": "EQ(*)"
         },
@@ -2303,6 +2325,23 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.parameter.select_string",
+                    "data_type": "string",
+                    "example_value": [
+                        "displayName"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.@odata.type",
+                    "data_type": "string",
+                    "example_value": "#microsoft.graph.user"
+                },
+                {
+                    "data_path": "action_result.data.*.accountEnabled",
+                    "data_type": "boolean",
+                    "example_value": true
+                },
+                {
                     "data_path": "action_result.data.*.displayName",
                     "data_type": "string",
                     "example_values": [
@@ -2310,6 +2349,11 @@
                     ],
                     "column_name": "Display Name",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.givenName",
+                    "data_type": "string",
+                    "example_value": ""
                 },
                 {
                     "data_path": "action_result.data.*.id",
@@ -2324,11 +2368,51 @@
                     "column_order": 1
                 },
                 {
+                    "data_path": "action_result.data.*.jobTitle",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.mail",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.mobilePhone",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.officeLocation",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.preferredLanguage",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.surname",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.userPrincipalName",
+                    "data_type": "string",
+                    "example_value": "ews_retest@phantomengineering2.onmicrosoft.com"
+                },
+                {
                     "data_path": "action_result.summary.num_members",
                     "data_type": "numeric",
                     "example_values": [
                         3
                     ]
+                },
+                {
+                    "data_path": "action_result.summary.num_users",
+                    "data_type": "numeric",
+                    "example_value": 3
                 },
                 {
                     "data_path": "action_result.message",
@@ -2350,65 +2434,12 @@
                     "example_values": [
                         1
                     ]
-                },
-                {
-                    "data_path": "action_result.data.*.mail",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.surname",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.jobTitle",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.givenName",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.@odata.type",
-                    "data_type": "string",
-                    "example_value": "#microsoft.graph.user"
-                },
-                {
-                    "data_path": "action_result.data.*.mobilePhone",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.officeLocation",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.preferredLanguage",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.userPrincipalName",
-                    "data_type": "string",
-                    "example_value": "ews_retest@phantomengineering2.onmicrosoft.com"
-                },
-                {
-                    "data_path": "action_result.summary.num_users",
-                    "data_type": "numeric",
-                    "example_value": 3
-                },
-                {
-                    "data_path": "action_result.data.*.accountEnabled",
-                    "data_type": "boolean",
-                    "example_value": true
                 }
             ],
             "render": {
-                "type": "table"
+                "type": "custom",
+                "title": "List Groups",
+                "view": "msadgraph_view.display_view"
             },
             "versions": "EQ(*)"
         },
@@ -2449,7 +2480,9 @@
                     "example_values": [
                         "success",
                         "failed"
-                    ]
+                    ],
+                    "column_name": "Status",
+                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.parameter.group_object_id",
@@ -2478,6 +2511,159 @@
                     "column_order": 1
                 },
                 {
+                    "data_path": "action_result.data.*.@odata.context",
+                    "data_type": "string",
+                    "example_value": "https://graph.microsoft.com/v1.0/$metadata#directoryObjects"
+                },
+                {
+                    "data_path": "action_result.data.*.user_in_group",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.@odata.type",
+                    "data_type": "string",
+                    "example_value": "#microsoft.graph.group"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.classification",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.createdDateTime",
+                    "data_type": "string",
+                    "example_value": "2022-02-25T12:05:22Z"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.deletedDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.description",
+                    "data_type": "string",
+                    "example_value": "Test group for MSGraph"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.displayName",
+                    "data_type": "string",
+                    "example_value": "Test group for MSGraph"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.expirationDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.id",
+                    "data_type": "string",
+                    "example_value": "49233413-24c6-4516-a9e1-4d5f87fe34fd"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.isAssignableToRole",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.mail",
+                    "data_type": "string",
+                    "example_value": "TestgroupforMSGraph@phantomengineering2.onmicrosoft.com"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.mailEnabled",
+                    "data_type": "boolean",
+                    "example_value": true
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.mailNickname",
+                    "data_type": "string",
+                    "example_value": "TestgroupforMSGraph"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.membershipRule",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.membershipRuleProcessingState",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.onPremisesDomainName",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.onPremisesLastSyncDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.onPremisesNetBiosName",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.onPremisesSamAccountName",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.onPremisesSecurityIdentifier",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.onPremisesSyncEnabled",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.preferredDataLocation",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.preferredLanguage",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.renewedDateTime",
+                    "data_type": "string",
+                    "example_value": "2022-02-25T12:05:22Z"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.securityEnabled",
+                    "data_type": "boolean",
+                    "example_value": true
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.securityIdentifier",
+                    "data_type": "string",
+                    "example_value": "S-1-12-1-1227043859-1159079110-1598939561-4248108679"
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.theme",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
+                    "data_path": "action_result.data.*.value.*.visibility",
+                    "data_type": "string",
+                    "example_value": "Private"
+                },
+                {
+                    "data_path": "action_result.summary.message",
+                    "data_type": "string",
+                    "example_value": "User is member of group"
+                },
+                {
+                    "data_path": "action_result.summary.user_in_group",
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
@@ -2497,189 +2683,6 @@
                     "example_values": [
                         1
                     ]
-                },
-                {
-                    "data_path": "action_result.data.*.scope",
-                    "data_type": "string",
-                    "example_value": "Directory.AccessAsUser.All Directory.Read.All Directory.ReadWrite.All Group.ReadWrite.All User.Read User.Read.All User.ReadWrite User.ReadWrite.All profile openid email"
-                },
-                {
-                    "data_path": "action_result.data.*.expires_in",
-                    "data_type": "numeric",
-                    "example_value": 3740
-                },
-                {
-                    "data_path": "action_result.data.*.token_type",
-                    "data_type": "string",
-                    "example_value": "Bearer"
-                },
-                {
-                    "data_path": "action_result.data.*.access_token",
-                    "data_type": "string",
-                    "example_value": "eyJ0eXAiOiJKV1QiLCJub25jZSI6IlBKWEtHUnVOWHdSektqdmRkVktVbUtiNlpVQmtYb1dDNUl4UndqV20yczQiLCJhbGciOiJSUzI1NiIsIng1dCI6Ik1yNS1BVWliZkJpaTdOZDFqQmViYXhib1hXMCIsImtpZCI6Ik1yNS1BVWliZkJpaTdOZDFqQmViYXhib1hXMCJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8xNDBmZTQ2ZC04MTlkLTRiNmQtYjdlZi0xYzBhODI3MGY0ZjAvIiwiaWF0IjoxNjQ2NzE1MTI0LCJuYmYiOjE2NDY3MTUxMjQsImV4cCI6MTY0NjcxOTE2NSwiYWNjdCI6MCwiYWNyIjoiMSIsImFpbyI6IkFTUUEyLzhUQUFBQXhUSTVWbTZyMDVkRm1zb1o3RXkzRnI1YlltTkhUdUlFQmU5NlJkM083NU09IiwiYW1yIjpbInB3ZCJdLCJhcHBfZGlzcGxheW5hbWUiOiJNUyBBRCIsImFwcGlkIjoiMDViOGUyYzUtOWU2NS00NDlmLTgxYWYtNGNmZDZjZTAzZWJhIiwiYXBwaWRhY3IiOiIxIiwiZmFtaWx5X25hbWUiOiJFZHdhcmRzIiwiZ2l2ZW5fbmFtZSI6Ikhlcm1hbiIsImlkdHlwIjoidXNlciIsImlwYWRkciI6IjEwMy4xMjcuMTY2LjM0IiwibmFtZSI6Ikhlcm1hbiBFZHdhcmRzIiwib2lkIjoiZWViMzY0NWYtZGYxOS00N2ExLThlOGMtZmNkMjM0Y2I1ZjZmIiwicGxhdGYiOiI1IiwicHVpZCI6IjEwMDNCRkZEOUJCNDFCMUEiLCJyaCI6IjAuQVJzQWJlUVBGSjJCYlV1Mzd4d0tnbkQwOEFNQUFBQUFBQUFBd0FBQUFBQUFBQUFiQUc0LiIsInNjcCI6IkRpcmVjdG9yeS5BY2Nlc3NBc1VzZXIuQWxsIERpcmVjdG9yeS5SZWFkLkFsbCBEaXJlY3RvcnkuUmVhZFdyaXRlLkFsbCBHcm91cC5SZWFkV3JpdGUuQWxsIFVzZXIuUmVhZCBVc2VyLlJlYWQuQWxsIFVzZXIuUmVhZFdyaXRlIFVzZXIuUmVhZFdyaXRlLkFsbCBwcm9maWxlIG9wZW5pZCBlbWFpbCIsInN1YiI6Il9ILW9ldkRNNHRreEtwYkJ1c3MxYXRMaTlhcDVJcUNDVG5wYWw4V3Vvd0UiLCJ0ZW5hbnRfcmVnaW9uX3Njb3BlIjoiTkEiLCJ0aWQiOiIxNDBmZTQ2ZC04MTlkLTRiNmQtYjdlZi0xYzBhODI3MGY0ZjAiLCJ1bmlxdWVfbmFtZSI6Imhlcm1hbkBwaGFudG9tZW5naW5lZXJpbmcyLm9ubWljcm9zb2Z0LmNvbSIsInVwbiI6Imhlcm1hbkBwaGFudG9tZW5naW5lZXJpbmcyLm9ubWljcm9zb2Z0LmNvbSIsInV0aSI6Il9Fd1lZY2dKTDBTNW9Jd0ZEbHNGQUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbIjcyOTgyN2UzLTljMTQtNDlmNy1iYjFiLTk2MDhmMTU2YmJiOCIsImZlOTMwYmU3LTVlNjItNDdkYi05MWFmLTk4YzNhNDlhMzhiMSIsImM0ZTM5YmQ5LTExMDAtNDZkMy04YzY1LWZiMTYwZGEwMDcxZiIsIjE5NGFlNGNiLWIxMjYtNDBiMi1iZDViLTYwOTFiMzgwOTc3ZCIsIjVkNmI2YmI3LWRlNzEtNDYyMy1iNGFmLTk2MzgwYTM1MjUwOSIsIjYyZTkwMzk0LTY5ZjUtNDIzNy05MTkwLTAxMjE3NzE0NWUxMCIsImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdLCJ4bXNfc3QiOnsic3ViIjoiQkJtekFOMzdGSkNwS04ycDVwSVhNLW9sdlNWakNzZFBiV3E4Q0VNdmt4RSJ9LCJ4bXNfdGNkdCI6MTQ3Nzk0NTA1Nn0.DQh8iE7dR-EiELXOmP2c8HauQgUWKGn3n3kcBCOli5wdpeZtPwIr5xeQR4J206iFZbTdsQA72DZwe_-FelfmEvEf72jjo-BznaROzc1xcDVo1i3XEB6Ih2sYRIttrk6OeP7D-gVqvSjU_X-MTzawuzN3ZKdpraEx6LotPkNLVLjul95KheuDWOovdYFCcX0eQOa3GbDq02CQfuJun0Yq5hLWhrEgBxBB0VtpSTrvpQ-3_ABh8RHPPwnIyvMMkPfSBu6hiSG8UjFi6qtpFvaLsKu4Ej6ZT6ZMzdnXmuH4cqZ3bmQSrCv2DNgNRHeldyst8Vi95SuW-ahn6qv0aTGnxg"
-                },
-                {
-                    "data_path": "action_result.data.*.refresh_token",
-                    "data_type": "string",
-                    "example_value": "0.ARsAbeQPFJ2BbUu37xwKgnD08MXiuAVlnp9Ega9M_WzgProbAG4.AgABAAAAAAD--DLA3VO7QrddgJg7WevrAgDs_wQA9P9B2c6TCyYfiD58mRHp9b8pvRzgBZNnlHrrhsJc2IdnFHM5hTcqK1BAVVVAo7eQ_pTGcdkAQG0XUdL1gGYp4gVqGzLJopipeEg6c32fuchh4erO6LH5B9uL5XCaxF8XUCwQeDOw6q_LV7zNi-DS9X9-PsHuEl5AXXG0zdwFjc_-tGLHImcNYPQEq-t-JUL-utW6_gq3cI4wwVozSU1rZ0jRMYg8KoSnE9qlAOL-tuv45TDeDHESpsfXjLloxX0Lv7WzXFkAx3uQsL0JKz3KdinQyfZ4ZsuGBlT4vSzbGVMBJ_Ry5JZ67ozDv4HfN4g7QCmsrTGn7BBHe0IRMWhuF5EMzaIF6s6KUa3VvXl-JgjIEetwhkFYk9CQCzmfQzYX6H0lOCqtgVHpexf8hT6HeW_PMJvQbdPXR-bmP9ZLSyyHTUNufGmrawyA5o7kSaxx9rPKv3BOArnmLFQdNz13BQ-RWaCxHDi15tnahwmunY8yuPLoyEhbtXxZt1hy8SP1RpwDVdMtx-xxswXCz1I7BEiaSWj7CwbB4TesIHn_zqQ72xgu7zLnU4d2qyTuKywOmGalQM73GE6YMFedVs0Z_kJteR4WFyo06A8INY1XTSUOjYCqtAxdnf66JD8mL73lsvSE5CqRZEnbm911N_S-OAxXwrg3omphIWf4B2O2Q9d6XQ5HLKu6sTvPHYTvehXInMcXOlya43DEDT7l_5b-ZogOx7VEoQVMVIthoyB0JqJJsqDHtHtLj3XYUDT95KFMmgWur8VrBis5GBo-JIcD9bBmjMt_1XHueuem8k1uTtT6QMXdvcMFSWWo9SE68nhGFYnkTOw0bwC03kJvpg26Kovd1K7BseHSmjucYc3gkFROUonjTiMC9RYhmQYwpHuqfAl35ecapIoKZcnWnLWGURqmT6tXXm7RDoUCvPCqzl1d5ttgkuM"
-                },
-                {
-                    "data_path": "action_result.data.*.ext_expires_in",
-                    "data_type": "numeric",
-                    "example_value": 3740
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.id",
-                    "data_type": "string",
-                    "example_value": "49233413-24c6-4516-a9e1-4d5f87fe34fd"
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.mail",
-                    "data_type": "string",
-                    "example_value": "TestgroupforMSGraph@phantomengineering2.onmicrosoft.com"
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.theme",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.visibility",
-                    "data_type": "string",
-                    "example_value": "Private"
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.@odata.type",
-                    "data_type": "string",
-                    "example_value": "#microsoft.graph.group"
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.description",
-                    "data_type": "string",
-                    "example_value": "Test group for MSGraph"
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.displayName",
-                    "data_type": "string",
-                    "example_value": "Test group for MSGraph"
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.mailEnabled",
-                    "data_type": "boolean",
-                    "example_value": true
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.mailNickname",
-                    "data_type": "string",
-                    "example_value": "TestgroupforMSGraph"
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.classification",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.membershipRule",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.createdDateTime",
-                    "data_type": "string",
-                    "example_value": "2022-02-25T12:05:22Z"
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.deletedDateTime",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.renewedDateTime",
-                    "data_type": "string",
-                    "example_value": "2022-02-25T12:05:22Z"
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.securityEnabled",
-                    "data_type": "boolean",
-                    "example_value": true
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.preferredLanguage",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.expirationDateTime",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.isAssignableToRole",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.securityIdentifier",
-                    "data_type": "string",
-                    "example_value": "S-1-12-1-1227043859-1159079110-1598939561-4248108679"
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.onPremisesDomainName",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.onPremisesNetBiosName",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.onPremisesSyncEnabled",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.preferredDataLocation",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.onPremisesSamAccountName",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.onPremisesLastSyncDateTime",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.onPremisesSecurityIdentifier",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.value.*.membershipRuleProcessingState",
-                    "data_type": "string",
-                    "example_value": ""
-                },
-                {
-                    "data_path": "action_result.data.*.@odata.context",
-                    "data_type": "string",
-                    "example_value": "https://graph.microsoft.com/v1.0/$metadata#directoryObjects"
-                },
-                {
-                    "data_path": "action_result.summary.message",
-                    "data_type": "string",
-                    "example_value": "User is member of group"
-                },
-                {
-                    "data_path": "action_result.data.*.user_in_group",
-                    "correct_data_type": "string"
-                },
-                {
-                    "data_path": "action_result.summary.user_in_group",
-                    "correct_data_type": "string"
                 }
             ],
             "render": {
@@ -2705,6 +2708,11 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.deletedDateTime",
+                    "data_type": "string",
+                    "example_value": ""
+                },
+                {
                     "data_path": "action_result.data.*.deletionTimestamp",
                     "data_type": "string"
                 },
@@ -2725,14 +2733,6 @@
                     "column_order": 0
                 },
                 {
-                    "data_path": "action_result.data.*.isSystem",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
                     "data_path": "action_result.data.*.id",
                     "data_type": "string",
                     "example_values": [
@@ -2743,6 +2743,14 @@
                     ],
                     "column_name": "Object ID",
                     "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.isSystem",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.objectType",
@@ -2757,16 +2765,6 @@
                     "example_values": [
                         "Microsoft.DirectoryServices.DirectoryRole"
                     ]
-                },
-                {
-                    "data_path": "action_result.data.*.roleDisabled",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ],
-                    "column_name": "Disabled",
-                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.data.*.roleTemplateId",
@@ -2805,11 +2803,6 @@
                     "example_values": [
                         1
                     ]
-                },
-                {
-                    "data_path": "action_result.data.*.deletedDateTime",
-                    "data_type": "string",
-                    "example_value": ""
                 }
             ],
             "render": {
@@ -2877,51 +2870,99 @@
         "wheel": [
             {
                 "module": "Django",
-                "input_file": "wheels/Django-3.2.11-py3-none-any.whl"
+                "input_file": "wheels/py3/Django-3.2.11-py3-none-any.whl"
             },
             {
                 "module": "asgiref",
-                "input_file": "wheels/asgiref-3.4.1-py3-none-any.whl"
+                "input_file": "wheels/py3/asgiref-3.4.1-py3-none-any.whl"
             },
             {
                 "module": "beautifulsoup4",
-                "input_file": "wheels/beautifulsoup4-4.9.1-py3-none-any.whl"
+                "input_file": "wheels/py3/beautifulsoup4-4.9.1-py3-none-any.whl"
             },
             {
                 "module": "certifi",
-                "input_file": "wheels/certifi-2021.10.8-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/certifi-2021.10.8-py2.py3-none-any.whl"
             },
             {
                 "module": "chardet",
-                "input_file": "wheels/chardet-3.0.4-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/chardet-3.0.4-py2.py3-none-any.whl"
             },
             {
                 "module": "idna",
-                "input_file": "wheels/idna-2.10-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/idna-2.10-py2.py3-none-any.whl"
             },
             {
                 "module": "pytz",
-                "input_file": "wheels/pytz-2021.3-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/pytz-2021.3-py2.py3-none-any.whl"
             },
             {
                 "module": "requests",
-                "input_file": "wheels/requests-2.25.0-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/requests-2.25.0-py2.py3-none-any.whl"
             },
             {
                 "module": "soupsieve",
-                "input_file": "wheels/soupsieve-2.3.1-py3-none-any.whl"
+                "input_file": "wheels/py3/soupsieve-2.3.1-py3-none-any.whl"
             },
             {
                 "module": "sqlparse",
-                "input_file": "wheels/sqlparse-0.4.2-py3-none-any.whl"
+                "input_file": "wheels/py3/sqlparse-0.4.2-py3-none-any.whl"
             },
             {
                 "module": "typing_extensions",
-                "input_file": "wheels/typing_extensions-4.0.1-py3-none-any.whl"
+                "input_file": "wheels/py3/typing_extensions-4.1.1-py3-none-any.whl"
             },
             {
                 "module": "urllib3",
-                "input_file": "wheels/urllib3-1.26.8-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/urllib3-1.26.8-py2.py3-none-any.whl"
+            }
+        ]
+    },
+    "pip39_dependencies": {
+        "wheel": [
+            {
+                "module": "Django",
+                "input_file": "wheels/py3/Django-3.2.11-py3-none-any.whl"
+            },
+            {
+                "module": "asgiref",
+                "input_file": "wheels/py3/asgiref-3.5.0-py3-none-any.whl"
+            },
+            {
+                "module": "beautifulsoup4",
+                "input_file": "wheels/py3/beautifulsoup4-4.9.1-py3-none-any.whl"
+            },
+            {
+                "module": "certifi",
+                "input_file": "wheels/shared/certifi-2021.10.8-py2.py3-none-any.whl"
+            },
+            {
+                "module": "chardet",
+                "input_file": "wheels/shared/chardet-3.0.4-py2.py3-none-any.whl"
+            },
+            {
+                "module": "idna",
+                "input_file": "wheels/shared/idna-2.10-py2.py3-none-any.whl"
+            },
+            {
+                "module": "pytz",
+                "input_file": "wheels/shared/pytz-2021.3-py2.py3-none-any.whl"
+            },
+            {
+                "module": "requests",
+                "input_file": "wheels/shared/requests-2.25.0-py2.py3-none-any.whl"
+            },
+            {
+                "module": "soupsieve",
+                "input_file": "wheels/py3/soupsieve-2.3.1-py3-none-any.whl"
+            },
+            {
+                "module": "sqlparse",
+                "input_file": "wheels/py3/sqlparse-0.4.2-py3-none-any.whl"
+            },
+            {
+                "module": "urllib3",
+                "input_file": "wheels/shared/urllib3-1.26.8-py2.py3-none-any.whl"
             }
         ]
     }

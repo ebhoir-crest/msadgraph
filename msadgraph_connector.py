@@ -19,10 +19,8 @@ import grp
 import json
 import os
 import pwd
-import re
 import sys
 import time
-from urllib import response
 
 import phantom.app as phantom
 import requests
@@ -630,7 +628,6 @@ class AzureADGraphConnector(BaseConnector):
 
         # Progress
         # self.save_progress("Generating Authentication URL")
-        config = self.get_config()
         app_state = {}
         action_result = self.add_action_result(ActionResult(param))
 
@@ -754,7 +751,7 @@ class AzureADGraphConnector(BaseConnector):
 
         parameters = dict()
         filter_string = param.get('filter_string')
-        select_string  = param.get('select_string')
+        select_string = param.get('select_string')
 
         if filter_string:
             parameters['$filter'] = filter_string
@@ -786,7 +783,7 @@ class AzureADGraphConnector(BaseConnector):
         data = {
             'passwordProfile': {
                 'forceChangePasswordNextLogin': force_change,
-                'password':temp_password
+                'password': temp_password
             }
         }
 
@@ -899,8 +896,6 @@ class AzureADGraphConnector(BaseConnector):
         summary = action_result.update_summary({})
         if user_id:
             summary['status'] = "Successfully retrieved attributes for user {}".format(user_id)
-            response = action_result.get_data()[0]
-            summary['user_enabled'] = response.get('accountEnabled')
         else:
             summary['status'] = "Successfully retrieved user attributes"
 
@@ -987,7 +982,7 @@ class AzureADGraphConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         parameters = dict()
-        select_string  = param.get('select_string')
+        select_string = param.get('select_string')
         if select_string:
             parameters['$select'] = select_string
 
